@@ -56,7 +56,7 @@ app.post('/responder', async (req, res) => {
       text: { body: mensagem }
     }, {
       headers: {
-        Authorization: `Bearer SEU_TOKEN_DE_ACESSO_AQUI`,
+        Authorization: `Bearer EAAKp50TZAjqgBPLcWrp702tf4iTQcW6G3rYSY7XGKWi7flxsWDTjsVVIO43C0XiIEOv87dcZBHdxdO5ZAuw6lEfNfXptcBjHfFbkL4SeGGMfHvGNeZCZBLquqNitF8XJHKxzBZCBEizcDGZBZBs0cZCuUZC3fePEEuN3PqYuscWDxHJ2saxJO3zhk5SEZAib2WfOaVpz2WQoWjzbdpE5qJPIefwjMvC0RQGFG6TZCqNcVjylRDeZBA27Ygi9axrxjydivHAZDZD`,
         'Content-Type': 'application/json'
       }
     });
@@ -94,7 +94,7 @@ app.post('/send-message', async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer SEU_TOKEN_DE_ACESSO_AQUI`,
+          Authorization: `Bearer EAAKp50TZAjqgBPLcWrp702tf4iTQcW6G3rYSY7XGKWi7flxsWDTjsVVIO43C0XiIEOv87dcZBHdxdO5ZAuw6lEfNfXptcBjHfFbkL4SeGGMfHvGNeZCZBLquqNitF8XJHKxzBZCBEizcDGZBZBs0cZCuUZC3fePEEuN3PqYuscWDxHJ2saxJO3zhk5SEZAib2WfOaVpz2WQoWjzbdpE5qJPIefwjMvC0RQGFG6TZCqNcVjylRDeZBA27Ygi9axrxjydivHAZDZD`,
           'Content-Type': 'application/json'
         }
       }
