@@ -18,7 +18,7 @@ try {
   interacoes = [];
 }
 
-// Webhook que recebe as interações do WhatsApp
+// Webhook que recebe interações do WhatsApp
 app.post('/webhook', (req, res) => {
   const msg = req.body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
@@ -26,22 +26,23 @@ app.post('/webhook', (req, res) => {
     const numero = msg.from;
     const botao = msg.interactive?.button_reply?.title || 'Desconhecido';
 
-    // Verificar se já existe essa interação para evitar duplicar
+    // Evitar duplicatas
     const jaExiste = interacoes.find(i => i.numero === numero && i.botao === botao);
     if (!jaExiste) {
       interacoes.push({ numero, botao });
       fs.writeFileSync('clientes.json', JSON.stringify(interacoes, null, 2));
     }
   }
+
   res.sendStatus(200);
 });
 
-// Rota para retornar as interações (para o painel)
+// Painel para ver interações
 app.get('/interacoes', (req, res) => {
   res.json(interacoes);
 });
 
-// Rota para enviar mensagem para o cliente
+// Rota para responder manualmente pelo painel
 app.post('/responder', async (req, res) => {
   const { numero, mensagem } = req.body;
 
@@ -53,7 +54,7 @@ app.post('/responder', async (req, res) => {
       text: { body: mensagem }
     }, {
       headers: {
-        Authorization: `Bearer EAAKp50TZAjqgBPNUI62rwAPzdQxbRpN2eBIcv5D44xxiRAHtE2AgmiLEaf8yacwfMjYVdGG0JwWBgC5W9QEEEc9yncMlxqvM28EYjD4SZC5OOo9TiHLiplAOVgSn7XKHqdZBj3B1m0DTT3ZACPji3s9ZAEGU8slFgIhvt2TYy6CttxhixK3ZAOy1YwVYdIi3A8iEAPndxM0EllbkhQRg33iCPPPJAO3LuyLfaZCwd9qY556Jr5zspR0N8DpCB57Lr8ZD`,
+        Authorization: `Bearer EAAKp50TZAjqgBPBcCd7WlDbFYE2OLgDABpQyEwrZBLNVQEPgW4OK7zWKWW77rMDZCj680WZBadXsb9vWAAdb7LCGYePTPXFpCaiFiSzgv6uSfifXjD49OQFxsdiSMRhOW4IDZApZCKZCwCwhHEZBqpaGVswQtzAvq7R53j7O88STPywfNZAM5nSGHsdGp4ZAptsOYTXjGKmZCkPNr2scLjxntfgeLo4U4UiZBIt9LPxZA0oCZCpdnnM4dvRhYwkjbxzTYfhAZDZD`,
         'Content-Type': 'application/json'
       }
     });
@@ -64,7 +65,46 @@ app.post('/responder', async (req, res) => {
   }
 });
 
+// ✅ NOVA ROTA: disparo com templates via Make
+app.post('/send-message', async (req, res) => {
+  const { to, template_name, language = 'pt_BR', parameters = [] } = req.body;
+
+  try {
+    const response = await axios.post(
+      `https://graph.facebook.com/v19.0/713151888548596/messages`,
+      {
+        messaging_product: 'whatsapp',
+        to,
+        type: 'template',
+        template: {
+          name: template_name,
+          language: { code: language },
+          components: [
+            {
+              type: 'body',
+              parameters: parameters.map(p => ({
+                type: 'text',
+                text: p
+              }))
+            }
+          ]
+        }
+      },
+      {
+        headers: {
+          Authorization: `Bearer EAAKp50TZAjqgBPBcCd7WlDbFYE2OLgDABpQyEwrZBLNVQEPgW4OK7zWKWW77rMDZCj680WZBadXsb9vWAAdb7LCGYePTPXFpCaiFiSzgv6uSfifXjD49OQFxsdiSMRhOW4IDZApZCKZCwCwhHEZBqpaGVswQtzAvq7R53j7O88STPywfNZAM5nSGHsdGp4ZAptsOYTXjGKmZCkPNr2scLjxntfgeLo4U4UiZBIt9LPxZA0oCZCpdnnM4dvRhYwkjbxzTYfhAZDZD`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    res.status(200).json({ success: true, data: response.data });
+  } catch (error) {
+    console.error('Erro ao enviar template:', error.response?.data || error.message);
+    res.status(500).json({ success: false, error: error.response?.data || error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-
