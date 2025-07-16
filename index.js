@@ -53,7 +53,7 @@ app.post('/responder', async (req, res) => {
       text: { body: mensagem }
     }, {
       headers: {
-        Authorization: `Bearer EAAKp50TZAjqgBPHonPTESWbS1ZCWYJalUsUlPp3NZBCh562FQAmZCNe3xFle6h8JzjJwPayz4mgLDy9ynTggnISKmWqGWFPDPz5iCDTSJOuzCMcKoYOY7GYIR1AY8i1Wh2rAFbN3KVtJQAADisdXApBhOKybZC2SYNdZCr0O6Qnh8yOn6LDUDm6EgfGwtV9PsqqUNT5jHIBakQCbVfrIe1hyLIwsHk0c22oZC2VkpX3dpbUdkytZBZCuAoBX8ZArafglgZD`,
+        Authorization: `Bearer EAAKp50TZAjqgBPNUI62rwAPzdQxbRpN2eBIcv5D44xxiRAHtE2AgmiLEaf8yacwfMjYVdGG0JwWBgC5W9QEEEc9yncMlxqvM28EYjD4SZC5OOo9TiHLiplAOVgSn7XKHqdZBj3B1m0DTT3ZACPji3s9ZAEGU8slFgIhvt2TYy6CttxhixK3ZAOy1YwVYdIi3A8iEAPndxM0EllbkhQRg33iCPPPJAO3LuyLfaZCwd9qY556Jr5zspR0N8DpCB57Lr8ZD`,
         'Content-Type': 'application/json'
       }
     });
