@@ -54,7 +54,7 @@ app.post('/responder', async (req, res) => {
       text: { body: mensagem }
     }, {
       headers: {
-        Authorization: `Bearer EAAKp50TZAjqgBPBcCd7WlDbFYE2OLgDABpQyEwrZBLNVQEPgW4OK7zWKWW77rMDZCj680WZBadXsb9vWAAdb7LCGYePTPXFpCaiFiSzgv6uSfifXjD49OQFxsdiSMRhOW4IDZApZCKZCwCwhHEZBqpaGVswQtzAvq7R53j7O88STPywfNZAM5nSGHsdGp4ZAptsOYTXjGKmZCkPNr2scLjxntfgeLo4U4UiZBIt9LPxZA0oCZCpdnnM4dvRhYwkjbxzTYfhAZDZD`,
+        Authorization: `Bearer EAAKp50TZAjqgBPKA4FyrGVZBelc4mU1x06ZAei7IimqZBngwptQL3w8jO9pdkIfMcl5x1fR0Cgi9koYbZB98yNXpOhYPdIlwjflZAJsLFUO19pkFaUw0uU5EAIqENq7yKXEBnC9Lm18eu6Ld8mJp3RW5V9VF9aTwyrzqXF05ZBoLGld3Mk3k2WwfZA6bZCvWZBucnp4pvRdfyxx4qDBZAYovdgjeZBzDA2AsUZAscGiXO2FcytVmAiOLUQ4PfZAWVLaNMjMQZDZD`,
         'Content-Type': 'application/json'
       }
     });
@@ -92,7 +92,7 @@ app.post('/send-message', async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer EAAKp50TZAjqgBPBcCd7WlDbFYE2OLgDABpQyEwrZBLNVQEPgW4OK7zWKWW77rMDZCj680WZBadXsb9vWAAdb7LCGYePTPXFpCaiFiSzgv6uSfifXjD49OQFxsdiSMRhOW4IDZApZCKZCwCwhHEZBqpaGVswQtzAvq7R53j7O88STPywfNZAM5nSGHsdGp4ZAptsOYTXjGKmZCkPNr2scLjxntfgeLo4U4UiZBIt9LPxZA0oCZCpdnnM4dvRhYwkjbxzTYfhAZDZD`,
+          Authorization: `Bearer EAAKp50TZAjqgBPKA4FyrGVZBelc4mU1x06ZAei7IimqZBngwptQL3w8jO9pdkIfMcl5x1fR0Cgi9koYbZB98yNXpOhYPdIlwjflZAJsLFUO19pkFaUw0uU5EAIqENq7yKXEBnC9Lm18eu6Ld8mJp3RW5V9VF9aTwyrzqXF05ZBoLGld3Mk3k2WwfZA6bZCvWZBucnp4pvRdfyxx4qDBZAYovdgjeZBzDA2AsUZAscGiXO2FcytVmAiOLUQ4PfZAWVLaNMjMQZDZD`,
           'Content-Type': 'application/json'
         }
       }
