@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Painel de Interações</title>
+</head>
+<body>
+  <h2>Clientes que clicaram no botão</h2>
+  <div id="clientes"></div>
+
+  <h3>Responder cliente</h3>
+  <input id="numero" placeholder="Número do cliente"><br><br>
+  <textarea id="mensagem" placeholder="Digite a mensagem" rows="4" cols="50"></textarea><br><br>
+  <button onclick="enviar()">Enviar</button>
+
+  <script>
+    async function carregar() {
+      const res = await fetch('/interacoes');
+      const dados = await res.json();
+      let html = '';
+
+      dados.forEach((d, i) => {
+        html += `<p><strong>${d.numero}</strong> clicou: <em>${d.botao}</em></p>`;
+      });
+
+      document.getElementById('clientes').innerHTML = html;
+    }
+
+    async function enviar() {
+      const numero = document.getElementById('numero').value;
+      const mensagem = document.getElementById('mensagem').value;
+
+      await fetch('/responder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ numero, mensagem })
+      });
+
+      alert('Mensagem enviada!');
+    }
+
+    carregar();
+  </script>
+</body>
+</html>
