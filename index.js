@@ -63,7 +63,7 @@ app.post('/responder', async (req, res) => {
       text: { body: mensagem }
     }, {
       headers: {
-        Authorization: `Bearer EAAKp50TZAjqgBPGoZCcTrtBImg3iWDSqk4TNuL0Pj1Vr7I1W9YeM2eETMOA5q13tqocdOVjrDw0wEDRXtZCAIyQbclPcgZCZB6noScLno2C9q2UZBQ5XGWOUjCL5hHoxliSUwTYLX3ccvn2oI3FAfAsLJXQZCIquhQ6weejbZCZBRGMa2Tps0bU35x0WiIUt1ZC1JUzngOkQuAXHSMRZASHSKDs1mZC7PKPbnZBpsVi2abBiQBgJiY6oGO6NZCB67FyZBotgAZDZD`,
+        Authorization: `Bearer EAAKp50TZAjqgBPLcJHD6FK52RFrN2TZCsQOcVRkVNYhBvNCfqng1zDhhDo21aSHslXfyhPBnZCZBFjZB8ZAkIibSZAaH1uRvJyhTrzBMgsCGrGhCMv3PZBQqwmgHDQFGnGDh2qZC0VbJJjfSLNsvH8EXewXv87ZBEXRG6qOvg8ObvSEEpflE0074SvXov2pDqw7pIHccvWzGnUTRneZAyqbFoyic9hmzql5MckM1g4JioS3HTb7V3o4ZCdhTWZAPZBbwZDZD`,
         'Content-Type': 'application/json'
       }
     });
@@ -102,7 +102,7 @@ app.post('/send-message', async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer EAAKp50TZAjqgBPGoZCcTrtBImg3iWDSqk4TNuL0Pj1Vr7I1W9YeM2eETMOA5q13tqocdOVjrDw0wEDRXtZCAIyQbclPcgZCZB6noScLno2C9q2UZBQ5XGWOUjCL5hHoxliSUwTYLX3ccvn2oI3FAfAsLJXQZCIquhQ6weejbZCZBRGMa2Tps0bU35x0WiIUt1ZC1JUzngOkQuAXHSMRZASHSKDs1mZC7PKPbnZBpsVi2abBiQBgJiY6oGO6NZCB67FyZBotgAZDZD`,
+          Authorization: `Bearer EAAKp50TZAjqgBPLcJHD6FK52RFrN2TZCsQOcVRkVNYhBvNCfqng1zDhhDo21aSHslXfyhPBnZCZBFjZB8ZAkIibSZAaH1uRvJyhTrzBMgsCGrGhCMv3PZBQqwmgHDQFGnGDh2qZC0VbJJjfSLNsvH8EXewXv87ZBEXRG6qOvg8ObvSEEpflE0074SvXov2pDqw7pIHccvWzGnUTRneZAyqbFoyic9hmzql5MckM1g4JioS3HTb7V3o4ZCdhTWZAPZBbwZDZD`,
           'Content-Type': 'application/json'
         }
       }
@@ -132,7 +132,9 @@ app.post('/chatwoot/webhook', async (req, res) => {
 
   const { content, contact } = req.body;
   const mensagem = content?.text || content?.message || ''; // mensagem enviada
-  const numero = contact?.identifier || contact?.phone_number?.replace(/\D/g, ''); // usa phone_number se identifier for nulo
+  let numero = contact?.identifier || contact?.phone_number || '';
+numero = numero.replace(/\D/g, ''); // remove tudo que não é número
+
 
   console.log('📩 Mensagem recebida do Chatwoot:', mensagem);
   console.log('📱 Enviando para número:', numero);
@@ -146,7 +148,7 @@ app.post('/chatwoot/webhook', async (req, res) => {
         text: { body: mensagem }
       }, {
         headers: {
-          Authorization: `Bearer EAAKp50TZAjqgBPGoZCcTrtBImg3iWDSqk4TNuL0Pj1Vr7I1W9YeM2eETMOA5q13tqocdOVjrDw0wEDRXtZCAIyQbclPcgZCZB6noScLno2C9q2UZBQ5XGWOUjCL5hHoxliSUwTYLX3ccvn2oI3FAfAsLJXQZCIquhQ6weejbZCZBRGMa2Tps0bU35x0WiIUt1ZC1JUzngOkQuAXHSMRZASHSKDs1mZC7PKPbnZBpsVi2abBiQBgJiY6oGO6NZCB67FyZBotgAZDZD`,
+          Authorization: `Bearer EAAKp50TZAjqgBPLcJHD6FK52RFrN2TZCsQOcVRkVNYhBvNCfqng1zDhhDo21aSHslXfyhPBnZCZBFjZB8ZAkIibSZAaH1uRvJyhTrzBMgsCGrGhCMv3PZBQqwmgHDQFGnGDh2qZC0VbJJjfSLNsvH8EXewXv87ZBEXRG6qOvg8ObvSEEpflE0074SvXov2pDqw7pIHccvWzGnUTRneZAyqbFoyic9hmzql5MckM1g4JioS3HTb7V3o4ZCdhTWZAPZBbwZDZD`,
           'Content-Type': 'application/json'
         }
       });
