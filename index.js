@@ -12,6 +12,22 @@ app.use(express.static('public'));
 
 const messagesFile = path.join(__dirname, 'messages.json');
 
+app.get('/webhook', (req, res) => {
+  const verify_token = 'meuverificawhatsapp'; // mesmo token que você colocou no Facebook
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode && token) {
+    if (mode === 'subscribe' && token === verify_token) {
+      console.log('Webhook verificado com sucesso');
+      res.status(200).send(challenge);
+    } else {
+      res.sendStatus(403);
+    }
+  }
+});
+
 app.post('/webhook', (req, res) => {
   const entry = req.body.entry?.[0];
   const changes = entry?.changes?.[0];
