@@ -1,13 +1,62 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Teste</title>
-    <style>
-      body { background: #f2f2f2; font-family: sans-serif; padding: 50px; }
-    </style>
-  </head>
-  <body>
-    <h1 style="color: green;">✅ Página carregou com sucesso!</h1>
-    <p>Se você está vendo isso, o servidor e a pasta public estão funcionando.</p>
-  </body>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel WhatsApp</title>
+  <script>
+    async function carregarMensagens() {
+      const res = await fetch('/messages');
+      const data = await res.json();
+      const contatos = Object.keys(data);
+      const contatosDiv = document.getElementById('contatos');
+      contatosDiv.innerHTML = '';
+
+      contatos.forEach(numero => {
+        const btn = document.createElement('button');
+        btn.innerText = numero;
+        btn.onclick = () => exibirConversa(numero, data[numero]);
+        contatosDiv.appendChild(btn);
+      });
+    }
+
+    function exibirConversa(numero, mensagens) {
+      const div = document.getElementById('conversa');
+      div.innerHTML = `<h3>Conversando com ${numero}</h3>`;
+      mensagens.forEach(m => {
+        const p = document.createElement('p');
+        p.innerText = `${m.from}: ${m.msg}`;
+        div.appendChild(p);
+      });
+
+      document.getElementById('destinatario').value = numero;
+    }
+
+    async function enviarMensagem() {
+      const to = document.getElementById('destinatario').value;
+      const text = document.getElementById('mensagem').value;
+
+      await fetch('/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, text })
+      });
+
+      document.getElementById('mensagem').value = '';
+      setTimeout(carregarMensagens, 1000);
+    }
+
+    window.onload = carregarMensagens;
+  </script>
+</head>
+<body>
+  <h1>Painel WhatsApp Cloud</h1>
+
+  <div id="contatos" style="margin-bottom: 20px;"></div>
+
+  <div id="conversa" style="border: 1px solid #ccc; padding: 10px; min-height: 200px;"></div>
+
+  <input type="text" id="destinatario" placeholder="Número do cliente" />
+  <input type="text" id="mensagem" placeholder="Digite sua mensagem" />
+  <button onclick="enviarMensagem()">Enviar</button>
+</body>
 </html>
