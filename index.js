@@ -5,12 +5,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use(express.static('public')); // serve arquivos da pasta public
+app.use(express.static('public')); // serve os arquivos painel.html, chat.html, etc
 
 // Lista em memória para controle de clientes já enviados
 let clientesEnviados = new Set();
 
-// Webhook que recebe interações do WhatsApp
+// 🔄 Webhook que recebe interações do WhatsApp
 app.post('/webhook', async (req, res) => {
   const body = req.body;
 
@@ -51,7 +51,7 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// Rota para responder manualmente pelo painel
+// 🟢 Rota para responder manualmente pelo painel
 app.post('/responder', async (req, res) => {
   const { numero, mensagem } = req.body;
 
@@ -67,6 +67,7 @@ app.post('/responder', async (req, res) => {
         'Content-Type': 'application/json'
       }
     });
+
     res.json({ status: 'enviado' });
   } catch (error) {
     console.error(error.response?.data || error.message);
@@ -74,7 +75,7 @@ app.post('/responder', async (req, res) => {
   }
 });
 
-// Rota para disparar templates via Make
+// 🟣 Rota para disparar mensagens com template via Make
 app.post('/send-message', async (req, res) => {
   const { to, template_name, language = 'pt_BR', parameters = [] } = req.body;
 
@@ -114,6 +115,17 @@ app.post('/send-message', async (req, res) => {
   }
 });
 
+// 📥 NOVA ROTA: Buscar clientes diretamente do Google Sheets via Make
+app.get('/clientes', async (req, res) => {
+  try {
+    const resposta = await axios.get('https://hook.us2.make.com/fsk7p1m16g46tzt7mpi8kbmlhbucy93y?get=clientes');
+    res.json(resposta.data);
+  } catch (error) {
+    console.error('Erro ao buscar clientes:', error.message);
+    res.status(500).json({ erro: 'Erro ao buscar clientes da planilha' });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`✅ Servidor rodando na porta ${PORT}`);
 });
