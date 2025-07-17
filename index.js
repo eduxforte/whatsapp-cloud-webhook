@@ -5,7 +5,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use(express.static('public'));  // serve arquivos da pasta public
+app.use(express.static('public')); // serve arquivos da pasta public
+
+// Lista em memória para controle de clientes já enviados
+let clientesEnviados = new Set();
 
 // Webhook que recebe interações do WhatsApp
 app.post('/webhook', async (req, res) => {
@@ -20,22 +23,26 @@ app.post('/webhook', async (req, res) => {
       const numero = message.from;
       const texto = message.text?.body || '';
       const botao = message.button?.text || '';
+      const conteudo = botao || texto;
 
-      // Enviar interações para o Make
-      if (botao || texto) {
+      // Envia interação para Make
+      if (conteudo) {
         await axios.post('https://hook.us2.make.com/fsk7p1m16g46tzt7mpi8kbmlhbucy93y', {
           tipo: 'interacao',
           numero,
-          mensagem: botao || texto,
+          mensagem: conteudo,
           data: new Date().toISOString()
         });
       }
 
-      // Enviar cliente único para o Make
-      await axios.post('https://hook.us2.make.com/fsk7p1m16g46tzt7mpi8kbmlhbucy93y', {
-        tipo: 'cliente',
-        numero
-      });
+      // Envia cliente para Make apenas se ainda não enviado
+      if (!clientesEnviados.has(numero)) {
+        clientesEnviados.add(numero);
+        await axios.post('https://hook.us2.make.com/fsk7p1m16g46tzt7mpi8kbmlhbucy93y', {
+          tipo: 'cliente',
+          numero
+        });
+      }
     }
 
     res.sendStatus(200);
