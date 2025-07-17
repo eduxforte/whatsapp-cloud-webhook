@@ -63,7 +63,7 @@ app.post('/responder', async (req, res) => {
       text: { body: mensagem }
     }, {
       headers: {
-        Authorization: `Bearer EAAKp50TZAjqgBPLcWrp702tf4iTQcW6G3rYSY7XGKWi7flxsWDTjsVVIO43C0XiIEOv87dcZBHdxdO5ZAuw6lEfNfXptcBjHfFbkL4SeGGMfHvGNeZCZBLquqNitF8XJHKxzBZCBEizcDGZBZBs0cZCuUZC3fePEEuN3PqYuscWDxHJ2saxJO3zhk5SEZAib2WfOaVpz2WQoWjzbdpE5qJPIefwjMvC0RQGFG6TZCqNcVjylRDeZBA27Ygi9axrxjydivHAZDZD`,
+        Authorization: `Bearer EAAKp50TZAjqgBPGoZCcTrtBImg3iWDSqk4TNuL0Pj1Vr7I1W9YeM2eETMOA5q13tqocdOVjrDw0wEDRXtZCAIyQbclPcgZCZB6noScLno2C9q2UZBQ5XGWOUjCL5hHoxliSUwTYLX3ccvn2oI3FAfAsLJXQZCIquhQ6weejbZCZBRGMa2Tps0bU35x0WiIUt1ZC1JUzngOkQuAXHSMRZASHSKDs1mZC7PKPbnZBpsVi2abBiQBgJiY6oGO6NZCB67FyZBotgAZDZD`,
         'Content-Type': 'application/json'
       }
     });
@@ -102,7 +102,7 @@ app.post('/send-message', async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer EAAKp50TZAjqgBPLcWrp702tf4iTQcW6G3rYSY7XGKWi7flxsWDTjsVVIO43C0XiIEOv87dcZBHdxdO5ZAuw6lEfNfXptcBjHfFbkL4SeGGMfHvGNeZCZBLquqNitF8XJHKxzBZCBEizcDGZBZBs0cZCuUZC3fePEEuN3PqYuscWDxHJ2saxJO3zhk5SEZAib2WfOaVpz2WQoWjzbdpE5qJPIefwjMvC0RQGFG6TZCqNcVjylRDeZBA27Ygi9axrxjydivHAZDZD`,
+          Authorization: `Bearer EAAKp50TZAjqgBPGoZCcTrtBImg3iWDSqk4TNuL0Pj1Vr7I1W9YeM2eETMOA5q13tqocdOVjrDw0wEDRXtZCAIyQbclPcgZCZB6noScLno2C9q2UZBQ5XGWOUjCL5hHoxliSUwTYLX3ccvn2oI3FAfAsLJXQZCIquhQ6weejbZCZBRGMa2Tps0bU35x0WiIUt1ZC1JUzngOkQuAXHSMRZASHSKDs1mZC7PKPbnZBpsVi2abBiQBgJiY6oGO6NZCB67FyZBotgAZDZD`,
           'Content-Type': 'application/json'
         }
       }
@@ -125,42 +125,41 @@ app.get('/clientes', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao buscar clientes da planilha' });
   }
 });
+
 // Webhook que recebe mensagens do Chatwoot
 app.post('/chatwoot/webhook', async (req, res) => {
   console.log('📦 Corpo recebido do Chatwoot:', JSON.stringify(req.body, null, 2));
 
-  try {
-    const { content, contact } = req.body;
+  const { content, contact } = req.body;
+  const mensagem = content?.text || content?.message || ''; // mensagem enviada
+  const numero = contact?.identifier || contact?.phone_number?.replace(/\D/g, ''); // usa phone_number se identifier for nulo
 
-    if (!contact?.identifier) {
-      return res.status(400).send('❌ Número do cliente ausente');
+  console.log('📩 Mensagem recebida do Chatwoot:', mensagem);
+  console.log('📱 Enviando para número:', numero);
+
+  if (numero && mensagem) {
+    try {
+      await axios.post(`https://graph.facebook.com/v19.0/713151888548596/messages`, {
+        messaging_product: "whatsapp",
+        to: numero,
+        type: "text",
+        text: { body: mensagem }
+      }, {
+        headers: {
+          Authorization: `Bearer EAAKp50TZAjqgBPGoZCcTrtBImg3iWDSqk4TNuL0Pj1Vr7I1W9YeM2eETMOA5q13tqocdOVjrDw0wEDRXtZCAIyQbclPcgZCZB6noScLno2C9q2UZBQ5XGWOUjCL5hHoxliSUwTYLX3ccvn2oI3FAfAsLJXQZCIquhQ6weejbZCZBRGMa2Tps0bU35x0WiIUt1ZC1JUzngOkQuAXHSMRZASHSKDs1mZC7PKPbnZBpsVi2abBiQBgJiY6oGO6NZCB67FyZBotgAZDZD`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return res.sendStatus(200);
+    } catch (error) {
+      console.error('❌ Erro ao responder no WhatsApp:', error.response?.data || error.message);
+      return res.status(500).send('Erro ao enviar mensagem');
     }
-
-    const mensagem = content?.text || content?.message || content?.input || '';
-
-    if (!mensagem) {
-      return res.status(400).send('❌ Mensagem ausente');
-    }
-
-    await axios.post(`https://graph.facebook.com/v19.0/713151888548596/messages`, {
-      messaging_product: "whatsapp",
-      to: contact.identifier,
-      type: "text",
-      text: { body: mensagem }
-    }, {
-      headers: {
-        Authorization: `Bearer EAAKp50TZAjqgBPLcWrp702tf4iTQcW6G3rYSY7XGKWi7flxsWDTjsVVIO43C0XiIEOv87dcZBHdxdO5ZAuw6lEfNfXptcBjHfFbkL4SeGGMfHvGNeZCZBLquqNitF8XJHKxzBZCBEizcDGZBZBs0cZCuUZC3fePEEuN3PqYuscWDxHJ2saxJO3zhk5SEZAib2WfOaVpz2WQoWjzbdpE5qJPIefwjMvC0RQGFG6TZCqNcVjylRDeZBA27Ygi9axrxjydivHAZDZD`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    return res.sendStatus(200);
-  } catch (error) {
-    console.error('❌ Erro ao processar mensagem do Chatwoot:', error.response?.data || error.message);
-    return res.status(500).send('Erro interno ao enviar');
+  } else {
+    return res.status(400).send('❌ Dados inválidos');
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`✅ Servidor rodando na porta ${PORT}`);
