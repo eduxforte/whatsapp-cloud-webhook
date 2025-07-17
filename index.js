@@ -127,31 +127,37 @@ app.get('/clientes', async (req, res) => {
 });
 // Webhook que recebe mensagens do Chatwoot
 app.post('/chatwoot/webhook', async (req, res) => {
-  const { content, contact } = req.body;
+  console.log('📦 Corpo recebido do Chatwoot:', JSON.stringify(req.body, null, 2));
 
-  console.log('📩 Mensagem recebida do Chatwoot:', content?.text);
+  try {
+    const { content, contact } = req.body;
 
-  if (contact?.identifier && content?.text) {
-    try {
-      await axios.post(`https://graph.facebook.com/v19.0/713151888548596/messages`, {
-        messaging_product: "whatsapp",
-        to: contact.identifier, // número do cliente
-        type: "text",
-        text: { body: content.text }
-      }, {
-        headers: {
-          Authorization: `Bearer EAAKp50TZAjqgBPLcWrp702tf4iTQcW6G3rYSY7XGKWi7flxsWDTjsVVIO43C0XiIEOv87dcZBHdxdO5ZAuw6lEfNfXptcBjHfFbkL4SeGGMfHvGNeZCZBLquqNitF8XJHKxzBZCBEizcDGZBZBs0cZCuUZC3fePEEuN3PqYuscWDxHJ2saxJO3zhk5SEZAib2WfOaVpz2WQoWjzbdpE5qJPIefwjMvC0RQGFG6TZCqNcVjylRDeZBA27Ygi9axrxjydivHAZDZD`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      res.sendStatus(200);
-    } catch (error) {
-      console.error('Erro ao responder no WhatsApp:', error.response?.data || error.message);
-      res.status(500).send('Erro ao enviar mensagem');
+    if (!contact?.identifier) {
+      return res.status(400).send('❌ Número do cliente ausente');
     }
-  } else {
-    res.status(400).send('Dados inválidos');
+
+    const mensagem = content?.text || content?.message || content?.input || '';
+
+    if (!mensagem) {
+      return res.status(400).send('❌ Mensagem ausente');
+    }
+
+    await axios.post(`https://graph.facebook.com/v19.0/713151888548596/messages`, {
+      messaging_product: "whatsapp",
+      to: contact.identifier,
+      type: "text",
+      text: { body: mensagem }
+    }, {
+      headers: {
+        Authorization: `Bearer EAAKp50TZAjqgBPLcWrp702tf4iTQcW6G3rYSY7XGKWi7flxsWDTjsVVIO43C0XiIEOv87dcZBHdxdO5ZAuw6lEfNfXptcBjHfFbkL4SeGGMfHvGNeZCZBLquqNitF8XJHKxzBZCBEizcDGZBZBs0cZCuUZC3fePEEuN3PqYuscWDxHJ2saxJO3zhk5SEZAib2WfOaVpz2WQoWjzbdpE5qJPIefwjMvC0RQGFG6TZCqNcVjylRDeZBA27Ygi9axrxjydivHAZDZD`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error('❌ Erro ao processar mensagem do Chatwoot:', error.response?.data || error.message);
+    return res.status(500).send('Erro interno ao enviar');
   }
 });
 
